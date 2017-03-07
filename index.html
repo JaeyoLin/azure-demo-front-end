@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Aaron Test</title>
+
+    <link rel="stylesheet" href="css/css-loader-master/css-loader.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="div_loader" class="loader loader-pokeball"></div>
+
+    Queue messages: <input id="txt_queue" type="text" />
+    <button onClick="sendQueue();">Send Queue</button>
+    <br /> Service bus queue messages: <input id="txt_serviceBusQueue" type="text" />
+    <button onClick="sendServiceBusQueue();">Send Service Bus Queue</button>
+
+    <script type="text/javascript">
+                     $(function () {
+
+                     });
+
+                     function openLoader() {
+                         $("#div_loader").addClass("is-active");
+                     }
+
+                     function closeLoader() {
+                         $("#div_loader").removeClass("is-active");
+                     }
+
+                     function sendQueue() {
+                         var message = $("#txt_queue").val();
+                         if (message !== "") {
+                             alert("sendQueue: " + message);
+                         }
+                     }
+                     function sendServiceBusQueue() {
+                         var message = $("#txt_serviceBusQueue").val();
+                         if (message !== "") {
+                             alert("txt_serviceBusQueue: " + message);
+                         }
+                     }
+    </script>
+</body>
+
+</html>
