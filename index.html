@@ -17,7 +17,7 @@
     <button onClick="sendServiceBusQueue();">Send Service Bus Queue</button>
 
     <script type="text/javascript">
-                     //var url = 'http://localhost:7071/api';
+                     //var url = 'http://localhost:7071/api/';
                      var url = 'https://azure-demo-back-end.azurewebsites.net/api/';
 
                      $(function () {
@@ -55,7 +55,21 @@
                      function sendServiceBusQueue() {
                          var message = $("#txt_serviceBusQueue").val();
                          if (message !== "") {
-                             alert("txt_serviceBusQueue: " + message);
+                             openLoader();
+                             $.ajax({
+                                 url: url + "sendServiceBusQueueMessage?message=" + message,
+                                 type: "GET",
+                                 success: function (msg) {
+                                     alert(msg);
+                                 },
+                                 error: function (xhr, ajaxOptions, thrownError) {
+                                     alert(xhr.status);
+                                     alert(thrownError);
+                                 },
+                                 complete: function () {
+                                     closeLoader();
+                                 }
+                             });
                          }
                      }
     </script>
