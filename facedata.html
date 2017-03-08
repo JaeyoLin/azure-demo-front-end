@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Face data</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+    <span id="result">
+
+    <script type="text/javascript">
+        //var url = 'http://localhost:7071/api/';
+        var url = 'https://azure-demo-back-end.azurewebsites.net/api/';
+
+        $.ajax({
+            url: url + "getFace",
+            type: "GET",
+            success: function (msg) {
+                $("#result").text(msg);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(xhr.status);
+                alert(thrownError);
+            },
+            complete: function () {
+                //closeLoader();
+            }
+        });
+    </script>
+</body>
+
+</html>

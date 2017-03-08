@@ -3,35 +3,190 @@
 
 <head>
     <title>Aaron Test</title>
-
+    <style>
+        .borderStyle {
+            border-color: #FF8C00;
+            border-style: solid;
+        }
+    </style>
     <link rel="stylesheet" href="css/css-loader-master/css-loader.css">
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
 </head>
 
 <body>
+
+    <form class="form-inline" role="form" action="#">
+        <div class="form-group">
+            <label class="sr-only" for="name">Image 1: </label>
+            <input type="text" class="form-control" id="image1_url" placeholder="Image url" value="http://twimg.edgesuite.net/images/ReNews/20160705/640_1c2b139f1d65533c65976f481315e0e8.jpg">
+        </div>
+        <button class="btn btn-info" onClick="imgDetect('image1_url', 'result1');">Detect</button>
+        <div class="form-group">
+            <label class="sr-only" for="name">Image 2: </label>
+            <input type="text" class="form-control" id="image2_url" placeholder="Image url" value="http://img.ltn.com.tw/Upload/liveNews/BigPic/600_phpBQGZ7Z.jpg">
+        </div>
+        <button class="btn btn-info" onClick="imgDetect('image2_url', 'result2');">Detect</button>
+        <button class="btn btn-primary" onClick="imgVerify();">Verify</button>
+    </form>
+
+    <div id="result1">
+        Image 1
+        <br /> Face Id: <span class="faceId"></span>
+        <br />Age: <span class="age"></span>
+        <br />gender: <span class="gender"></span>
+        <br />glasses: <span class="glasses"></span>
+        <br />smile: <span class="smile"></span>
+        <br /> <img src="">
+        <span class="faceLandmarks"></span>
+        <div class="faceBorder"></div>
+    </div>
+    <div id="result2">
+        Image 2
+        <br /> Face Id: <span class="faceId"></span>
+        <br />Age: <span class="age"></span>
+        <br />gender: <span class="gender"></span>
+        <br />glasses: <span class="glasses"></span>
+        <br />smile: <span class="smile"></span>
+        <br /> <img src="">
+        <span class="faceLandmarks"></span>
+        <div class="faceBorder"></div>
+    </div>
     <div id="div_loader" class="loader loader-pokeball"></div>
 
+    <!--
     Queue messages: <input id="txt_queue" type="text" />
     <button onClick="sendQueue();">Send Queue</button>
     <br /> Service bus queue messages: <input id="txt_serviceBusQueue" type="text" />
     <button onClick="sendServiceBusQueue();">Send Service Bus Queue</button>
+    -->
 
     <script type="text/javascript">
-                     //var url = 'http://localhost:7071/api/';
-                     var url = 'https://azure-demo-back-end.azurewebsites.net/api/';
+                                                 //var url = 'http://localhost:7071/api/';
+                                                 var url = 'https://azure-demo-back-end.azurewebsites.net/api/';
+                                                 var subscriptionKey1 = '8103a21eebb24529adb2a3e2f2cd36d2';
+                                                 var subscriptionKey2 = 'f04063ec5fec4a4d94c0355e2ff32b15';
 
-                     $(function () {
+                                                 $(function () {
 
-                     });
+                                                 });
 
-                     function openLoader() {
-                         $("#div_loader").addClass("is-active");
-                     }
+                                                 function imgDetect(imageId, resultId) {
+                                                     var imageUrl = $("#" + imageId).val();
+                                                     if (imageUrl === "") {
+                                                         alert("URL??");
+                                                     } else {
+                                                         var params = {
+                                                             "returnFaceId": "true",
+                                                             "returnFaceLandmarks": "true",
+                                                             "returnFaceAttributes": "age,gender,smile,facialHair,headPose,glasses",
+                                                         };
 
-                     function closeLoader() {
-                         $("#div_loader").removeClass("is-active");
-                     }
+                                                         var body = {
+                                                             "url": imageUrl
+                                                         };
 
+                                                         $.ajax({
+                                                             url: "https://westus.api.cognitive.microsoft.com/face/v1.0/detect?" + $.param(params),
+                                                             beforeSend: function (xhrObj) {
+                                                                 openLoader();
+                                                                 xhrObj.setRequestHeader("Content-Type", "application/json");
+                                                                 xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey1);
+                                                             },
+                                                             type: "POST",
+                                                             data: JSON.stringify(body),
+                                                         })
+                                                             .done(function (data) {
+                                                                 //closeLoader();
+                                                                 $("#" + resultId).find("img").attr("src", imageUrl);
+                                                                 $("#" + resultId).find(".faceId").html(data[0].faceId);
+                                                                 $("#" + resultId).find('.age').html(data[0].faceAttributes.age);
+                                                                 $("#" + resultId).find('.gender').html(data[0].faceAttributes.gender);
+                                                                 $("#" + resultId).find('.glasses').html(data[0].faceAttributes.glasses);
+                                                                 $("#" + resultId).find('.smile').html(data[0].faceAttributes.smile);
+                                                                 $("#" + resultId).find('.faceBorder').width(data[0].faceRectangle.width);
+                                                                 $("#" + resultId).find('.faceBorder').height(data[0].faceRectangle.height);
+
+                                                                 var top = $("#" + resultId).find('img').offset().top;
+                                                                 var left = $("#" + resultId).find('img').offset().left;
+                                                                 $("#" + resultId).find('.faceBorder').css({ top: top + data[0].faceRectangle.top, left: left + data[0].faceRectangle.left, position: 'absolute' });
+                                                                 $("#" + resultId).find('.faceBorder').addClass('borderStyle');
+
+                                                                 var faceLandmarks = "";
+                                                                 for (var key in data[0].faceLandmarks) {
+                                                                     if (data[0].faceLandmarks.hasOwnProperty(key)) {
+                                                                         faceLandmarks += '<div class="borderStyle" style="top:' + ((top * 1) + (data[0].faceLandmarks[key].y * 1)) + 'px;left:' + ((left * 1) + (data[0].faceLandmarks[key].x * 1)) + 'px;position:absolute"></div>';
+                                                                     }
+                                                                 }
+                                                                 $("#" + resultId).find('.faceLandmarks').html(faceLandmarks);
+
+                                                                 $.ajax({
+                                                                     url: url + "insertFace?faceId=" + data[0].faceId + "&gender=" + data[0].faceAttributes.gender + "&age=" + data[0].faceAttributes.age,
+                                                                     type: "GET",
+                                                                     success: function (msg) {
+                                                                         alert(msg);
+                                                                     },
+                                                                     error: function (xhr, ajaxOptions, thrownError) {
+                                                                         alert(xhr.status);
+                                                                         alert(thrownError);
+                                                                     },
+                                                                     complete: function () {
+                                                                         closeLoader();
+                                                                     }
+                                                                 });
+                                                             })
+                                                             .fail(function (error) {
+                                                                 closeLoader();
+                                                                 alert(error);
+                                                             });
+                                                     }
+                                                 }
+
+                                                 function imgVerify() {
+                                                     var params = {
+                                                         "faceId": "c5c24a82-6845-4031-9d5d-978df9175426",
+                                                         "peronId": "815df99c-598f-4926-930a-a734b3fd651c",
+                                                         "personGroupId": "sample_group"
+                                                     };
+
+                                                     var body = {
+                                                         "faceId1": $("#result1").find(".faceId").html(),
+                                                         "faceId2": $("#result2").find(".faceId").html(),
+                                                     };
+
+                                                     $.ajax({
+                                                         url: "https://westus.api.cognitive.microsoft.com/face/v1.0/verify?" + $.param(params),
+                                                         beforeSend: function (xhrObj) {
+                                                             openLoader();
+                                                             xhrObj.setRequestHeader("Content-Type", "application/json");
+                                                             xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey2);
+                                                         },
+                                                         type: "POST",
+                                                         // Request body
+                                                         data: JSON.stringify(body),
+                                                     })
+                                                         .done(function (data) {
+                                                             closeLoader();
+                                                             alert("isIdentical: " + data.isIdentical + "  confidence: " + data.confidence);
+                                                         })
+                                                         .fail(function (error) {
+                                                             closeLoader();
+                                                             alert("Verify error");
+                                                         });
+                                                 }
+
+                                                 function openLoader() {
+                                                     $("#div_loader").addClass("is-active");
+                                                 }
+
+                                                 function closeLoader() {
+                                                     $("#div_loader").removeClass("is-active");
+                                                 }
+
+                     /*
                      function sendQueue() {
                          var message = $("#txt_queue").val();
                          if (message !== "") {
@@ -72,6 +227,7 @@
                              });
                          }
                      }
+                     */
     </script>
 </body>
 
