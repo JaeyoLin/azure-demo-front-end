@@ -4,31 +4,60 @@
 <head>
     <meta charset="UTF-8">
     <title>Face data</title>
+    <link rel="stylesheet" href="css/css-loader-master/css-loader.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
+
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
 </head>
 
 <body>
 
     <span id="result">
+    <div id="div_loader" class="loader loader-pokeball"></div>
+
+<table id="example" class="display" cellspacing="0" width="100%">
+     <thead>
+            <tr>
+                <th>Seq</th>
+                <th>Face Id</th>
+                <th>Gender</th>
+                <th>Age</th>
+                
+            </tr>
+        </thead>
+</table>
 
     <script type="text/javascript">
         //var url = 'http://localhost:7071/api/';
         var url = 'https://azure-demo-back-end.azurewebsites.net/api/';
-
+        openLoader();
         $.ajax({
             url: url + "getFace",
             type: "GET",
-            success: function (msg) {
-                $("#result").text(msg);
+            sync: true,
+            success: function (data) {
+                //$("#result").text(msg);
+                $('#example').DataTable({
+                    data: data
+                });
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 alert(xhr.status);
                 alert(thrownError);
             },
             complete: function () {
-                //closeLoader();
+                closeLoader();
             }
         });
+
+        function openLoader() {
+            $("#div_loader").addClass("is-active");
+        }
+
+        function closeLoader() {
+            $("#div_loader").removeClass("is-active");
+        }
     </script>
 </body>
 
