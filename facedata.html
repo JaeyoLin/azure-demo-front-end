@@ -19,10 +19,6 @@
 <table id="example" class="display" cellspacing="0" width="100%">
      <thead>
             <tr>
-                <th>Seq</th>
-                <th>Face Id</th>
-                <th>Gender</th>
-                <th>Age</th>
                 
             </tr>
         </thead>
@@ -36,10 +32,15 @@
             url: url + "getFace",
             type: "GET",
             sync: true,
-            success: function (data) {
-                //$("#result").text(msg);
+            success: function (resultData) {
+                var data = JSON.parse(resultData);
                 $('#example').DataTable({
-                    data: data
+                    "aoColumns": [{ "sTitle": "SEQ", "mData": "seq" },
+                    { "sTitle": "Face Id", "mData": "faceId" },
+                    { "sTitle": "Gender", "mData": "gender" },
+                    { "sTitle": "Age", "mData": "age" }],
+                    "aaData": data,
+                    "order": [[0, "desc"]]
                 });
             },
             error: function (xhr, ajaxOptions, thrownError) {
